@@ -8,6 +8,7 @@ Gem::Specification.new do |spec|
   spec.version       = Rimu::VERSION
   spec.authors       = ["Andrew Colin Kissa"]
   spec.email         = ["andrew@topdog.za.net"]
+  spec.license       = "MPL-2.0"
 
   spec.summary       = %q{Ruby bindings for the Rimuhosting REST API}
   spec.description   = %q{Ruby bindings for the Rimuhosting REST API}
