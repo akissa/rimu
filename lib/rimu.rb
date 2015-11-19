@@ -3,6 +3,8 @@ require 'ostruct'
 require 'httparty'
 
 class Rimu
+    attr_accessor :logger
+
     def initialize(args)
         @api_url = args[:api_url] if args[:api_url]
         @logger = args[:logger]
@@ -15,6 +17,10 @@ class Rimu
 
     def api_url
         @api_url || "https://api.rimuhosting.com"
+    end
+
+    def api_key
+        @api_key
     end
 
     def set_headers
