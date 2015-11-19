@@ -2,8 +2,6 @@ require 'json'
 require 'ostruct'
 require 'httparty'
 
-require "rimu/version"
-
 class Rimu
     def initialize(args)
         @api_url = args[:api_url] if args[:api_url]
@@ -40,6 +38,12 @@ class Rimu
         HTTParty.get(api_url + path, @options).parsed_response
     end
 
+    def delete(path)
+        logger.info "DELETE #{api_url.to_s}#{path}" if logger
+        @options = {headers: set_headers}
+        HTTParty.delete(api_url + path, @options).parsed_response
+    end
+
     def error?(response)
         response and response["extended_error_infos"] and ! response["extended_error_infos"].empty?
     end
@@ -50,18 +54,8 @@ class Rimu
         }.join("\n")
     end
 
-    def format_response(response)
-        if response.has_key?("pricing_plan_infos")
-            result = response["pricing_plan_infos"]
-        elsif response.has_key?("about_orders")
-            result = response["about_orders"]
-        elsif response.has_key?("distro_infos")
-            result = response["distro_infos"]
-        elsif response.has_key?("billing_methods")
-            result = response["billing_methods"]
-        else
-            result = []
-        end
+    def format_response(response, field)
+        result = response[field]
         return result.collect {|item| convert_item(item) } if result.class == Array
         return result unless result.respond_to?(:keys)
         convert_item(result)
@@ -74,4 +68,45 @@ class Rimu
         end
         OpenStruct.new(response)
     end
+
+    def send_request(path, field, method="GET", data=false)
+        if method == "POST"
+            response = post(path, data)
+        elsif method == "PUT"
+            response = put(path, data)
+        elsif method == "DELETE"
+            response = delete(path)
+        else
+            response = get(path)
+        end
+        raise "Errors completing request [#{path}] @ [#{api_url}] with data [#{data.inspect}]:\n#{error_message(response)}" if error?(response)
+        format_response(response, field)
+    end
+
+    def distributions
+        send_request("/r/distributions", "distro_infos")
+    end
+
+    def billing_methods
+        send_request("/r/billing-methods", "billing_methods")
+    end
+
+    def pricing_plans
+        send_request("/r/pricing-plans", "billing_methods")
+    end
+
+    def self.has_namespace(*namespaces)
+        namespaces.each do |namespace|
+            define_method(namespace.to_sym) do ||
+                lookup = instance_variable_get("@#{namespace}")
+                return lookup if lookup
+                subclass = self.class.const_get(namespace.to_s.capitalize).new(:api_key => api_key, :api_url => api_url)
+                instance_variable_set("@#{namespace}", subclass)
+                subclass
+            end
+        end
+    end
+
+    has_namespace :orders, :servers
 end
+Dir[File.expand_path(File.dirname(__FILE__) + '/rimu/*.rb')].each {|f| require f }
