@@ -116,5 +116,69 @@ describe 'Rimu' do
                 lambda { @rimu.pricing_plans(:foo) }.should raise_error(ArgumentError)
             end
         end
+
+        it 'should be able to provide access to the Rimu Servers API' do
+            @rimu.should respond_to(:servers)
+        end
+
+        describe 'when providing access to the Rimu Servers API' do
+            it 'should allow no arguments' do
+                lambda { @rimu.servers }.should_not raise_error
+            end
+
+            it 'should require no arguments' do
+                lambda { @rimu.servers(:foo) }.should raise_error(ArgumentError)
+            end
+
+            it 'should return a Rimu::Servers instance' do
+                @rimu.servers.class.should == Rimu::Servers
+            end
+
+            it 'should set the API key on the Rimu::Servers instance to be our API key' do
+                @rimu.servers.api_key.should == @api_key
+            end
+
+            it 'should set the API url on the Rimu::Servers instance to be our API url' do
+                @rimu.servers.api_url.should == @api_url
+            end
+
+            it 'should return the same Rimu::Servers instance when called again' do
+                rimu = Rimu.new(:api_key => @api_key)
+                result = rimu.servers
+                rimu.servers.should == result
+            end
+        end
+
+        it 'should be able to provide access to the Rimu Orders API' do
+            @rimu.should respond_to(:orders)
+        end
+
+        describe 'when providing access to the Rimu Orders API' do
+            it 'should allow no arguments' do
+                lambda { @rimu.orders }.should_not raise_error
+            end
+
+            it 'should require no arguments' do
+                lambda { @rimu.orders(:foo) }.should raise_error(ArgumentError)
+            end
+
+            it 'should return a Rimu::Orders instance' do
+                @rimu.orders.class.should == Rimu::Orders
+            end
+
+            it 'should set the API key on the Rimu::Orders instance to be our API key' do
+                @rimu.orders.api_key.should == @api_key
+            end
+
+            it 'should set the API url on the Rimu::Orders instance to be our API url' do
+                @rimu.orders.api_url.should == @api_url
+            end
+
+            it 'should return the same Rimu::Orders instance when called again' do
+                rimu = Rimu.new(:api_key => @api_key)
+                result = rimu.orders
+                rimu.orders.should == result
+            end
+        end
     end
 end
