@@ -8,7 +8,7 @@ Gem::Specification.new do |spec|
   spec.license       = "MPL-2.0"
 
   spec.summary       = %q{Ruby bindings for the Rimuhosting REST API}
-  spec.description   = %q{Ruby bindings for the Rimuhosting REST API}
+  spec.description   = %q{This is a Ruby wrapper around Rimuhosting's REST API}
   spec.homepage      = "https://github.com/akissa/rimu"
 
   spec.files         = `git ls-files -z`.split("\x0").reject { |f| f.match(%r{^(test|spec|features)/}) }
@@ -18,8 +18,8 @@ Gem::Specification.new do |spec|
 
   spec.add_development_dependency "bundler", "~> 1.10"
   spec.add_development_dependency "rake", "~> 10.0"
-  spec.add_development_dependency "rspec"
-  spec.add_development_dependency "mocha"
+  spec.add_development_dependency "rspec", '~> 0'
+  spec.add_development_dependency "mocha", '~> 0'
   spec.add_runtime_dependency "httparty", "~> 0.0"
   spec.add_runtime_dependency "json", "~> 1.0"
 end
