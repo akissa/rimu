@@ -156,6 +156,7 @@ class Rimu
                     :api_key => api_key,
                     :api_url => api_url,
                     :logger => logger,
+                    :read_timeout => read_timeout,
                 )
                 instance_variable_set("@#{namespace}", subclass)
                 subclass
