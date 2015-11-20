@@ -56,7 +56,7 @@ class Rimu::Servers < Rimu
 
     def info(oid)
         raise ArgumentError, "oid should be an Integer" unless oid.is_a?(Integer)
-        send_request("/r/orders/order-#{oid}-dn/vps", "about_order")
+        send_request("/r/orders/order-#{oid}-dn", "about_order")
     end
 
     def cancel(oid)
