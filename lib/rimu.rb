@@ -28,7 +28,7 @@ class Rimu
             'Content-Type' =>'application/json',
             'Accept' =>'application/json',
             'User-Agent' => 'RimuAPI-Ruby',
-            'Authorization' => 'rimuhosting apikey=' % @api_key
+            'Authorization' => 'rimuhosting apikey=%s' % @api_key
         }
     end
 
@@ -51,17 +51,18 @@ class Rimu
     end
 
     def error?(response)
-        response and response["extended_error_infos"] and ! response["extended_error_infos"].empty?
+        response and response["jaxrs_response"] and \
+        response["jaxrs_response"]["response_type"] and \
+        response["jaxrs_response"]["response_type"] == "ERROR"
     end
 
     def error_message(response)
-        response["extended_error_infos"].collect { |err|
-            "  - Error #{err["human_readable_message"]}.  "
-        }.join("\n")
+        "  - Error: #{response["jaxrs_response"]["human_readable_message"]}"
     end
 
     def format_response(response, field)
-        result = response[field]
+        result = response[response.keys[0]]
+        result = result[field]
         return result.collect {|item| convert_item(item) } if result.class == Array
         return result unless result.respond_to?(:keys)
         convert_item(result)
@@ -97,9 +98,9 @@ class Rimu
         send_request("/r/billing-methods", "billing_methods")
     end
 
-    def pricing_plans
-        send_request("/r/pricing-plans", "billing_methods")
-    end
+    # def pricing_plans
+    #     send_request("/r/pricing-plans", "billing_methods")
+    # end
 
     def self.has_namespace(*namespaces)
         namespaces.each do |namespace|
