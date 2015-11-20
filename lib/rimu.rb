@@ -34,20 +34,20 @@ class Rimu
 
     def post(path, data)
         logger.info "POST #{api_url.to_s}#{path} body:#{data.inspect}" if logger
-        @options = {headers: set_headers, body: data}
-        HTTParty.post(api_url + path, @options).parsed_response
+        options = {headers: set_headers, body: data}
+        HTTParty.post(api_url + path, options).parsed_response
     end
 
     def get(path)
         logger.info "GET #{api_url.to_s}#{path}" if logger
-        @options = {headers: set_headers}
-        HTTParty.get(api_url + path, @options).parsed_response
+        options = {headers: set_headers}
+        HTTParty.get(api_url + path, options).parsed_response
     end
 
     def delete(path)
         logger.info "DELETE #{api_url.to_s}#{path}" if logger
-        @options = {headers: set_headers}
-        HTTParty.delete(api_url + path, @options).parsed_response
+        options = {headers: set_headers}
+        HTTParty.delete(api_url + path, options).parsed_response
     end
 
     def error?(response)
@@ -78,7 +78,7 @@ class Rimu
         OpenStruct.new(response)
     end
 
-    def send_request(path, field, method="GET", data=false)
+    def send_request(path, field, method="GET", data=nil)
         if method == "POST"
             response = post(path, data)
         elsif method == "PUT"
@@ -101,8 +101,21 @@ class Rimu
     end
 
     # def pricing_plans
-    #     send_request("/r/pricing-plans", "billing_methods")
+    #     send_request("/r/pricing-plans", "pricing_plan_infos")
     # end
+
+    def prep_data(default_params, params)
+        params.keep_if {|k,_| default_params.keys.include? k }
+        new_params = default_params.merge(params)
+        new_params.each_pair do |key, val|
+            if val.is_a?(Hash)
+                val.keep_if {|k,v| v != nil }
+                val.keep_if {|k,_| default_params[key].keys.include? k }
+            end
+        end
+        new_params.keep_if {|k,v| (v.is_a?(Hash) && ! v.empty?) || (! v.is_a?(Hash) && v != nil) }
+        return new_params
+    end
 
     def self.has_namespace(*namespaces)
         namespaces.each do |namespace|
