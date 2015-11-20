@@ -13,6 +13,8 @@ class Rimu
         else
             raise ArgumentError, "The :api_key is required."
         end
+        @read_timeout = args[:read_timeout] if args[:read_timeout]
+        raise ArgumentError, "The :read_timeout must be an Integer." if ! @read_timeout.nil? && ! @read_timeout.is_a?(Integer)
     end
 
     def api_url
@@ -23,19 +25,29 @@ class Rimu
         @api_key
     end
 
+    def read_timeout
+        @read_timeout || 3600
+    end
+
     def set_headers
         {
             'Content-Type' =>'application/json',
             'Accept' =>'application/json',
             'User-Agent' => 'RimuAPI-Ruby',
-            'Authorization' => 'rimuhosting apikey=#{api_key}',
+            'Authorization' => "rimuhosting apikey=#{api_key}",
         }
     end
 
     def post(path, data)
         logger.info "POST #{api_url}#{path} body:#{data.inspect}" if logger
-        options = {headers: set_headers, body: data}
+        options = {headers: set_headers, body: data.to_json}
         HTTParty.post(api_url + path, options).parsed_response
+    end
+
+    def put(path, data)
+        logger.info "PUT #{api_url}#{path} body:#{data.inspect}" if logger
+        options = {headers: set_headers, body: data.to_json, read_timeout: read_timeout}
+        HTTParty.put(api_url + path, options).parsed_response
     end
 
     def get(path)
@@ -51,13 +63,30 @@ class Rimu
     end
 
     def error?(response)
-        response and response["jaxrs_response"] and \
-        response["jaxrs_response"]["response_type"] and \
-        response["jaxrs_response"]["response_type"] == "ERROR"
+        if response.nil?
+            return true
+        else
+            if response.is_a?(Hash)
+                ! response.empty? and response[response.keys[0]] and \
+                response[response.keys[0]].has_key?("response_type") and \
+                response[response.keys[0]]["response_type"] == "ERROR"
+            else
+                return true
+            end
+        end
     end
 
     def error_message(response)
-        "  - Error: #{response["jaxrs_response"]["human_readable_message"]}"
+        if response.nil? || ! response.is_a?(Hash) || (response.is_a?(Hash) && response.empty?)
+            "  - Error: Unknown error occured"
+        else
+            if response[response.keys[0]].has_key?("human_readable_message")
+                error = response[response.keys[0]]["human_readable_message"]
+                "  - Error: #{error}"
+            else
+                "  - Error: Unknown error occured"
+            end
+        end
     end
 
     def format_response(response, field)
@@ -89,6 +118,7 @@ class Rimu
             response = get(path)
         end
         raise "Errors completing request [#{path}] @ [#{api_url}] with data [#{data.inspect}]:\n#{error_message(response)}" if error?(response)
+        logger.info "Response: => #{response}" if logger
         format_response(response, field)
     end
 
@@ -122,7 +152,11 @@ class Rimu
             define_method(namespace.to_sym) do ||
                 lookup = instance_variable_get("@#{namespace}")
                 return lookup if lookup
-                subclass = self.class.const_get(namespace.to_s.capitalize).new(:api_key => api_key, :api_url => api_url)
+                subclass = self.class.const_get(namespace.to_s.capitalize).new(
+                    :api_key => api_key,
+                    :api_url => api_url,
+                    :logger => logger,
+                )
                 instance_variable_set("@#{namespace}", subclass)
                 subclass
             end
