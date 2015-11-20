@@ -2,6 +2,7 @@ require 'cgi'
 
 class Rimu::Orders < Rimu
     def orders(params={})
+        raise ArgumentError, "params should be a hash" unless params.is_a?(Hash)
         default_params = {
             :include_inactive => 'N',
             :server_type => 'VPS',
@@ -12,6 +13,7 @@ class Rimu::Orders < Rimu
     end
 
     def order(oid)
+        raise ArgumentError, "oid should be an Integer" unless oid.is_a?(Integer)
         send_request("/r/orders/order-#{oid}-dn", "about_order")
     end
 end
