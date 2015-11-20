@@ -22,6 +22,10 @@ describe Rimu::Orders do
             @rimu.stubs(:send_request)
             lambda { @rimu.send(:orders, {}) }.should_not raise_error
         end
+        it 'should allow a only params of hash type' do
+            @rimu.stubs(:send_request)
+            lambda { @rimu.send(:orders, 1) }.should raise_error(ArgumentError)
+        end
         it 'should not require arguments' do
             @rimu.stubs(:send_request)
             lambda { @rimu.send(:orders) }.should_not raise_error
@@ -57,9 +61,13 @@ describe Rimu::Orders do
             @rimu.stubs(:send_request)
             lambda { @rimu.send(:order, 1, {}) }.should raise_error(ArgumentError)
         end
-        it 'should require one arguments' do
+        it 'should require an argument' do
             @rimu.stubs(:send_request)
             lambda { @rimu.send(:order) }.should raise_error(ArgumentError)
+        end
+        it 'should require argument of Integer type' do
+            @rimu.stubs(:send_request)
+            lambda { @rimu.send(:order, {}) }.should raise_error(ArgumentError)
         end
         it "should request the correct path" do
             @rimu.expects(:send_request).with {|path, field, method, data| path == "/r/orders/order-10-dn" }
