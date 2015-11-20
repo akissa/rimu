@@ -62,7 +62,9 @@ class Rimu
 
     def format_response(response, field)
         result = response[response.keys[0]]
-        result = result[field]
+        if result.is_a?(Hash) and result.has_key?(field)
+            result = result[field]
+        end
         return result.collect {|item| convert_item(item) } if result.class == Array
         return result unless result.respond_to?(:keys)
         convert_item(result)
