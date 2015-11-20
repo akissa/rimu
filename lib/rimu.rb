@@ -28,24 +28,24 @@ class Rimu
             'Content-Type' =>'application/json',
             'Accept' =>'application/json',
             'User-Agent' => 'RimuAPI-Ruby',
-            'Authorization' => 'rimuhosting apikey=%s' % @api_key
+            'Authorization' => 'rimuhosting apikey=#{api_key}',
         }
     end
 
     def post(path, data)
-        logger.info "POST #{api_url.to_s}#{path} body:#{data.inspect}" if logger
+        logger.info "POST #{api_url}#{path} body:#{data.inspect}" if logger
         options = {headers: set_headers, body: data}
         HTTParty.post(api_url + path, options).parsed_response
     end
 
     def get(path)
-        logger.info "GET #{api_url.to_s}#{path}" if logger
+        logger.info "GET #{api_url}#{path}" if logger
         options = {headers: set_headers}
         HTTParty.get(api_url + path, options).parsed_response
     end
 
     def delete(path)
-        logger.info "DELETE #{api_url.to_s}#{path}" if logger
+        logger.info "DELETE #{api_url}#{path}" if logger
         options = {headers: set_headers}
         HTTParty.delete(api_url + path, options).parsed_response
     end
@@ -109,11 +109,11 @@ class Rimu
         new_params = default_params.merge(params)
         new_params.each_pair do |key, val|
             if val.is_a?(Hash)
-                val.keep_if {|k,v| v != nil }
+                val.keep_if {|_,v| v != nil }
                 val.keep_if {|k,_| default_params[key].keys.include? k }
             end
         end
-        new_params.keep_if {|k,v| (v.is_a?(Hash) && ! v.empty?) || (! v.is_a?(Hash) && v != nil) }
+        new_params.keep_if {|_,v| (v.is_a?(Hash) && ! v.empty?) || (! v.is_a?(Hash) && v != nil) }
         return new_params
     end
 

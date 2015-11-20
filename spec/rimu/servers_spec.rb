@@ -29,23 +29,23 @@ describe Rimu::Servers do
             lambda { @rimu.send(:create, {:dc_location => "DALLAS"}) }.should raise_error(ArgumentError)
         end
         it "should request the correct path" do
-            @rimu.expects(:send_request).with {|path, field, method, data| path == "/r/orders/new-vps" }
+            @rimu.expects(:send_request).with {|path, _, _, _| path == "/r/orders/new-vps" }
             @rimu.send(:create, {:instantiation_options=>{:domain_name=>"example.com"}})
         end
         it "should request the correct field" do
-            @rimu.expects(:send_request).with {|path, field, method, data| field == "about_order" }
+            @rimu.expects(:send_request).with {|_, field, _, _| field == "about_order" }
             @rimu.send(:create, {:instantiation_options=>{:domain_name=>"example.com"}})
         end
         it "should have the method parameter set" do
-            @rimu.expects(:send_request).with {|path, field, method, data| method == "POST" }
+            @rimu.expects(:send_request).with {|_, _, method, _| method == "POST" }
             @rimu.send(:create, {:instantiation_options=>{:domain_name=>"example.com"}})
         end
         it "should have the data parameter set" do
-            @rimu.expects(:send_request).with {|path, field, method, data| data == {:new_order_request => {:instantiation_options => {:domain_name => 'example.com'}}} }
+            @rimu.expects(:send_request).with {|_, _, _, data| data == {:new_order_request => {:instantiation_options => {:domain_name => 'example.com'}}} }
             @rimu.send(:create, {:instantiation_options=>{:domain_name=>"example.com"}})
         end
         it "should have either instantiation_options or instantiation_via_clone_options set" do
-            @rimu.expects(:send_request).with {|path, field, method, data| data == {:new_order_request => {:instantiation_via_clone_options => {:domain_name => 'example.com'}}} }
+            @rimu.expects(:send_request).with {|_, _, _, data| data == {:new_order_request => {:instantiation_via_clone_options => {:domain_name => 'example.com'}}} }
             @rimu.send(:create, {:instantiation_via_clone_options=>{:domain_name=>"example.com"}})
         end
     end
@@ -67,19 +67,19 @@ describe Rimu::Servers do
             lambda { @rimu.send(:reinstall, 10, {}) }.should_not raise_error
         end
         it "should request the correct path" do
-            @rimu.expects(:send_request).with {|path, field, method, data| path == "/r/orders/order-10-dn/vps/reinstall" }
+            @rimu.expects(:send_request).with {|path, _, _, _| path == "/r/orders/order-10-dn/vps/reinstall" }
             @rimu.send(:reinstall, 10, {})
         end
         it "should request the correct field" do
-            @rimu.expects(:send_request).with {|path, field, method, data| field == "running_vps_info" }
+            @rimu.expects(:send_request).with {|_, field, _, _| field == "running_vps_info" }
             @rimu.send(:reinstall, 10, {})
         end
         it "should have the method parameter set" do
-            @rimu.expects(:send_request).with {|path, field, method, data| method == "PUT" }
+            @rimu.expects(:send_request).with {|_, _, method, _| method == "PUT" }
             @rimu.send(:reinstall, 10, {})
         end
         it "should have the data parameter set" do
-            @rimu.expects(:send_request).with {|path, field, method, data| data == {:reinstall_request => {}} }
+            @rimu.expects(:send_request).with {|_, _, _, data| data == {:reinstall_request => {}} }
             @rimu.send(:reinstall, 10, {})
         end
     end
@@ -99,11 +99,11 @@ describe Rimu::Servers do
     %w(status info data_transfer).each do |action|
         describe "when accessing the Rimu::Servers API #{action} method" do
             it "should not have the method parameter set" do
-                @rimu.expects(:send_request).with {|path, field, method, data| method.nil? && true }
+                @rimu.expects(:send_request).with {|_, _, method, _| method.nil? && true }
                 @rimu.send(action.to_sym, 10)
             end
             it "should not have the data parameter set" do
-                @rimu.expects(:send_request).with {|path, field, method, data| data.nil? && true }
+                @rimu.expects(:send_request).with {|_, _, _, data| data.nil? && true }
                 @rimu.send(action.to_sym, 10)
             end
         end
@@ -117,19 +117,19 @@ describe Rimu::Servers do
     %w(reboot shutdown start power_cycle).each do |action|
         describe "when accessing the Rimu::Servers API #{action} method" do
             it "should request the correct path" do
-                @rimu.expects(:send_request).with {|path, field, method, data| path == "/r/orders/order-10-dn/vps/running-state" }
+                @rimu.expects(:send_request).with {|path, _, _, _| path == "/r/orders/order-10-dn/vps/running-state" }
                 @rimu.send(action.to_sym, 10)
             end
             it "should request the correct field" do
-                @rimu.expects(:send_request).with {|path, field, method, data| field == "running_vps_info" }
+                @rimu.expects(:send_request).with {|_, field, _, _| field == "running_vps_info" }
                 @rimu.send(action.to_sym, 10)
             end
             it "should have the method parameter set" do
-                @rimu.expects(:send_request).with {|path, field, method, data| method == "PUT" }
+                @rimu.expects(:send_request).with {|_, _, method, _| method == "PUT" }
                 @rimu.send(action.to_sym, 10)
             end
             it "should have the data parameter set" do
-                @rimu.expects(:send_request).with {|path, field, method, data| data == {:running_state_change_request => {:running_state=>group_params[action.to_sym]}} }
+                @rimu.expects(:send_request).with {|_, _, _, data| data == {:running_state_change_request => {:running_state=>group_params[action.to_sym]}} }
                 @rimu.send(action.to_sym, 10)
             end
         end
@@ -144,19 +144,19 @@ describe Rimu::Servers do
             lambda { @rimu.send(:change_state, {}) }.should raise_error(ArgumentError)
         end
         it "should request the correct path" do
-            @rimu.expects(:send_request).with {|path, field, method, data| path == "/r/orders/order-10-dn/vps/running-state" }
+            @rimu.expects(:send_request).with {|path, _, _, _| path == "/r/orders/order-10-dn/vps/running-state" }
             @rimu.send(:change_state, 10, "RESTARTING")
         end
         it "should request the correct field" do
-            @rimu.expects(:send_request).with {|path, field, method, data| field == "running_vps_info" }
+            @rimu.expects(:send_request).with {|_, field, _, _| field == "running_vps_info" }
             @rimu.send(:change_state, 10, "RESTARTING")
         end
         it "should have the method parameter set" do
-            @rimu.expects(:send_request).with {|path, field, method, data| method == "PUT" }
+            @rimu.expects(:send_request).with {|_, _, method, _| method == "PUT" }
             @rimu.send(:change_state, 10, "RESTARTING")
         end
         it "should have the data parameter set" do
-            @rimu.expects(:send_request).with {|path, field, method, data| data == {:running_state_change_request => {:running_state=>"RESTARTING"}} }
+            @rimu.expects(:send_request).with {|_, _, _, data| data == {:running_state_change_request => {:running_state=>"RESTARTING"}} }
             @rimu.send(:change_state, 10, "RESTARTING")
         end
     end

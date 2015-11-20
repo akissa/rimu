@@ -31,27 +31,27 @@ describe Rimu::Orders do
             lambda { @rimu.send(:orders) }.should_not raise_error
         end
         it "should request the correct path" do
-            @rimu.expects(:send_request).with {|path, field, method, data| path == "/r/orders;include_inactive=N;server_type=VPS" }
+            @rimu.expects(:send_request).with {|path, _, _, _| path == "/r/orders;include_inactive=N;server_type=VPS" }
             @rimu.send(:orders)
         end
         it "should request the correct path when filters are set" do
-            @rimu.expects(:send_request).with {|path, field, method, data| path == "/r/orders;include_inactive=Y;server_type=ALL" }
+            @rimu.expects(:send_request).with {|path, _, _, _| path == "/r/orders;include_inactive=Y;server_type=ALL" }
             @rimu.send(:orders, {:include_inactive=>'Y', :server_type=>'ALL'})
         end
         it "should request the correct path when incorrect filters are set" do
-            @rimu.expects(:send_request).with {|path, field, method, data| path == "/r/orders;include_inactive=N;server_type=VPS" }
+            @rimu.expects(:send_request).with {|path, _, _, _| path == "/r/orders;include_inactive=N;server_type=VPS" }
             @rimu.send(:orders, {:xnclude_inactive=>'Y', :zerver_type=>'ALL'})
         end
         it "should request the correct field" do
-            @rimu.expects(:send_request).with {|path, field, method, data| field == "about_orders" }
+            @rimu.expects(:send_request).with {|_, field, _, _| field == "about_orders" }
             @rimu.send(:orders)
         end
         it "should not have the method parameter set" do
-            @rimu.expects(:send_request).with {|path, field, method, data| method.nil? && true }
+            @rimu.expects(:send_request).with {|_, _, method, _| method.nil? && true }
             @rimu.send(:orders)
         end
         it "should not have the data parameter set" do
-            @rimu.expects(:send_request).with {|path, field, method, data| data.nil? && true }
+            @rimu.expects(:send_request).with {|_, _, _, data| data.nil? && true }
             @rimu.send(:orders)
         end
     end
@@ -70,19 +70,19 @@ describe Rimu::Orders do
             lambda { @rimu.send(:order, {}) }.should raise_error(ArgumentError)
         end
         it "should request the correct path" do
-            @rimu.expects(:send_request).with {|path, field, method, data| path == "/r/orders/order-10-dn" }
+            @rimu.expects(:send_request).with {|path, _, _, _| path == "/r/orders/order-10-dn" }
             @rimu.send(:order, 10)
         end
         it "should request the correct field" do
-            @rimu.expects(:send_request).with {|path, field, method, data| field == "about_order" }
+            @rimu.expects(:send_request).with {|_, field, _, _| field == "about_order" }
             @rimu.send(:order, 10)
         end
         it "should not have the method parameter set" do
-            @rimu.expects(:send_request).with {|path, field, method, data| method.nil? && true }
+            @rimu.expects(:send_request).with {|_, _, method, _| method.nil? && true }
             @rimu.send(:order, 10)
         end
         it "should not have the data parameter set" do
-            @rimu.expects(:send_request).with {|path, field, method, data| data.nil? && true }
+            @rimu.expects(:send_request).with {|_, _, _, data| data.nil? && true }
             @rimu.send(:order, 10)
         end
     end
