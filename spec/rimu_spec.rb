@@ -29,6 +29,20 @@ describe Rimu do
             api.logger.should == 'bar'
         end
 
+        it 'should allow providing a read_timeout' do
+            api = Rimu.new(:api_key => 'foo', :read_timeout => 60)
+            api.read_timeout.should == 60
+        end
+
+        it 'should allow only accept read_timeout as an Integer' do
+            lambda { Rimu.new(:api_key => 'foo', :read_timeout => '60') }.should raise_error(ArgumentError)
+        end
+
+        it 'should default to 3600 if read_timeout parameter not provided' do
+            api = Rimu.new(:api_key => 'foo')
+            api.read_timeout.should == 3600
+        end
+
         it 'should return a Rimu instance' do
             Rimu.new(:api_key => 'foo').class.should == Rimu
         end
