@@ -2,7 +2,7 @@
 
 Gem::Specification.new do |spec|
   spec.name          = "rimu"
-  spec.version       = "0.0.1"
+  spec.version       = "0.0.2"
   spec.authors       = ["Andrew Colin Kissa"]
   spec.email         = ["andrew@topdog.za.net"]
   spec.license       = "MPL-2.0"
