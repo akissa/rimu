@@ -1,11 +1,12 @@
 ---
 engines:
   fixme:
-    enabled: true
+      enabled: true
   rubocop:
-    enabled: true
+      enabled: true
 ratings:
-  paths:
-  - "**.rb"
+    paths:
+        - "**.rb"
 exclude_paths:
-- spec/**/*
+    - "**.yml"
+    - spec/**/*
