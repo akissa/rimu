@@ -130,10 +130,6 @@ class Rimu
         send_request("/r/billing-methods", "billing_methods")
     end
 
-    # def pricing_plans
-    #     send_request("/r/pricing-plans", "pricing_plan_infos")
-    # end
-
     def prep_data(default_params, params)
         params.keep_if {|k,_| default_params.keys.include? k }
         new_params = default_params.merge(params)

@@ -117,20 +117,6 @@ describe 'Rimu' do
             end
         end
 
-        # it 'should be able to provide access to the Rimu Pricing Plans API' do
-        #     @rimu.should respond_to(:pricing_plans)
-        # end
-        #
-        # describe 'when providing access to the Rimu Pricing Plans API' do
-        #     it 'should allow no arguments' do
-        #         lambda { @rimu.pricing_plans }.should_not raise_error
-        #     end
-        #
-        #     it 'should require no arguments' do
-        #         lambda { @rimu.pricing_plans(:foo) }.should raise_error(ArgumentError)
-        #     end
-        # end
-
         it 'should be able to provide access to the Rimu Servers API' do
             @rimu.should respond_to(:servers)
         end
