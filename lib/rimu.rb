@@ -147,10 +147,10 @@ class Rimu
     class RimuArgumentError < ArgumentError
     end
 
-    class RimuRequestError < ArgumentError
+    class RimuRequestError < StandardError
     end
 
-    class RimuResponseError < ArgumentError
+    class RimuResponseError < StandardError
     end
 end
 Dir[File.expand_path(File.dirname(__FILE__) + '/rimu/*.rb')].each {|f| require f }
