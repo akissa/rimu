@@ -51,7 +51,7 @@ end
 
 describe 'Rimu' do
     before :each do
-        @api_url = 'https://fake-api.rimuhosting.com/'
+        @api_url = 'https://fake-api.rimuhosting.com'
         @api_key = 'foo'
         @rimu = Rimu.new(:api_key => @api_key, :api_url => @api_url)
     end
@@ -63,8 +63,8 @@ describe 'Rimu' do
 
         describe 'when returning the current API URL' do
             it 'should return the API URL provided at creation time if one was provided' do
-                @rimu = Rimu.new(:api_key => @api_key, :api_url => 'https://fake-api.rimuhosting.com/')
-                @rimu.api_url.should == 'https://fake-api.rimuhosting.com/'
+                @rimu = Rimu.new(:api_key => @api_key, :api_url => 'https://fake-api.rimuhosting.com')
+                @rimu.api_url.should == 'https://fake-api.rimuhosting.com'
             end
 
             it 'should return the stock Rimu API URL if none was provided at creation time' do
@@ -78,7 +78,12 @@ describe 'Rimu' do
         @rimu.should respond_to(:send_request)
     end
 
+    it 'should raise the correct custom exception' do
+      lambda { @rimu.distributions }.should raise_error(Rimu::RimuRequestError)
+    end
+
     describe 'when submitting a request via the API' do
+      describe 'when getting an empty response' do
         before :each do
             @json = %Q!{}!
             @json.stubs(:parsed_response).returns(JSON.parse(@json))
@@ -86,7 +91,28 @@ describe 'Rimu' do
             HTTParty.stubs(:post).returns(@json)
             HTTParty.stubs(:put).returns(@json)
             HTTParty.stubs(:delete).returns(@json)
-            @rimu.stubs(:api_url).returns('https://fake-api.rimuhosting.com/')
+            @rimu.stubs(:api_url).returns('https://fake-api.rimuhosting.com')
+        end
+        describe 'when providing access to the Rimu distributions API' do
+          it 'should allow raise the correct exception' do
+              lambda { @rimu.distributions }.should raise_error(Rimu::RimuResponseError)
+          end
+        end
+        describe 'when providing access to the Rimu Billing Methods API' do
+          it 'should allow raise the correct exception' do
+              lambda { @rimu.billing_methods }.should raise_error(Rimu::RimuResponseError)
+          end
+        end
+      end
+      describe 'when getting an no empty response' do
+        before :each do
+            @json = %Q!{"fake": {"fake_key": "fake_value"}}!
+            @json.stubs(:parsed_response).returns(JSON.parse(@json))
+            HTTParty.stubs(:get).returns(@json)
+            HTTParty.stubs(:post).returns(@json)
+            HTTParty.stubs(:put).returns(@json)
+            HTTParty.stubs(:delete).returns(@json)
+            @rimu.stubs(:api_url).returns('https://fake-api.rimuhosting.com')
         end
 
         it 'should be able to provide access to the Rimu distributions API' do
@@ -180,5 +206,6 @@ describe 'Rimu' do
                 rimu.orders.should == result
             end
         end
+      end
     end
 end
