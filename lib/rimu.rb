@@ -38,35 +38,11 @@ class Rimu
         }
     end
 
-    def post(path, data)
-        logger.info "POST #{api_url}#{path} body:#{data.inspect}" if logger
-        options = {headers: set_headers, body: data.to_json}
-        HTTParty.post(api_url + path, options).parsed_response
-    end
-
-    def put(path, data)
-        logger.info "PUT #{api_url}#{path} body:#{data.inspect}" if logger
-        options = {headers: set_headers, body: data.to_json, read_timeout: read_timeout}
-        HTTParty.put(api_url + path, options).parsed_response
-    end
-
-    def get(path)
-        logger.info "GET #{api_url}#{path}" if logger
-        options = {headers: set_headers}
-        HTTParty.get(api_url + path, options).parsed_response
-    end
-
-    def delete(path)
-        logger.info "DELETE #{api_url}#{path}" if logger
-        options = {headers: set_headers}
-        HTTParty.delete(api_url + path, options).parsed_response
-    end
-
     def error?(response)
         if response.nil?
             return true
         else
-            if response.is_a?(Hash)
+            if response.is_a?(Hash) && ! response.empty?
                 ! response.empty? and response[response.keys[0]] and \
                 response[response.keys[0]].has_key?("response_type") and \
                 response[response.keys[0]]["response_type"] == "ERROR"
@@ -78,7 +54,11 @@ class Rimu
 
     def error_message(response)
         if response.nil? || ! response.is_a?(Hash) || (response.is_a?(Hash) && response.empty?)
+          if response.empty?
+            "  - Error: Response was empty"
+          else
             "  - Error: Unknown error occured"
+          end
         else
             if response[response.keys[0]].has_key?("human_readable_message")
                 error = response[response.keys[0]]["human_readable_message"]
@@ -108,16 +88,18 @@ class Rimu
     end
 
     def send_request(path, field, method="GET", data=nil)
-        if method == "POST"
-            response = post(path, data)
-        elsif method == "PUT"
-            response = put(path, data)
-        elsif method == "DELETE"
-            response = delete(path)
+        logger.info "#{method} #{api_url}#{path} body:#{data.inspect}" if logger
+        if data
+          options = {headers: set_headers, body: data.to_json, read_timeout: read_timeout} if data
         else
-            response = get(path)
+          options = {headers: set_headers}
         end
-        raise "Errors completing request [#{path}] @ [#{api_url}] with data [#{data.inspect}]:\n#{error_message(response)}" if error?(response)
+        begin
+          response = HTTParty.send(method.downcase.to_sym, path, options).parsed_response
+        rescue StandardError => e
+          raise RimuRequestError, "Errors completing request #{method} #{api_url}#{path} with data [#{data.inspect}]:\n#{e}"
+        end
+        raise RimuResponseError, "Errors completing request #{method} #{api_url}#{path} with data [#{data.inspect}]:\n#{error_message(response)}" if error?(response)
         logger.info "Response: => #{response}" if logger
         format_response(response, field)
     end
@@ -161,5 +143,14 @@ class Rimu
     end
 
     has_namespace :orders, :servers
+
+    class RimuArgumentError < ArgumentError
+    end
+
+    class RimuRequestError < ArgumentError
+    end
+
+    class RimuResponseError < ArgumentError
+    end
 end
 Dir[File.expand_path(File.dirname(__FILE__) + '/rimu/*.rb')].each {|f| require f }
