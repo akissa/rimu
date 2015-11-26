@@ -90,7 +90,7 @@ class Rimu
     def send_request(path, field, method="GET", data=nil)
         logger.info "#{method} #{api_url}#{path} body:#{data.inspect}" if logger
         if data
-          options = {headers: set_headers, body: data.to_json, read_timeout: read_timeout} if data
+          options = {headers: set_headers, body: data.to_json, read_timeout: read_timeout}
         else
           options = {headers: set_headers}
         end
