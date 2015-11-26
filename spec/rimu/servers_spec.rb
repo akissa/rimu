@@ -109,6 +109,23 @@ describe Rimu::Servers do
             end
         end
     end
+    
+    describe 'when accessing the Rimu::Servers API cancel method' do
+      oid = 10
+      it 'should request the correct path' do
+        @rimu.expects(:send_request).with {|path, _, _, _| path == "/r/orders/order-#{oid}-dn/vps" }
+        @rimu.send(:cancel, oid)
+      end
+      it 'should have the correct method parameter set' do
+        @rimu.expects(:send_request).with {|_, _, method, _| method == 'DELETE' }
+        @rimu.send(:cancel, oid)
+      end
+      it 'should not have the data parameter set' do
+        @rimu.expects(:send_request).with {|_, _, _, data| data.nil? && true }
+        @rimu.send(:cancel, oid)
+      end
+    end
+    
     group_params = {
         :reboot => "RESTARTING",
         :shutdown => "NOTRUNNING",
