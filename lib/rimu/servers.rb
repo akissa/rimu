@@ -64,14 +64,14 @@ class Rimu::Servers < Rimu
         send_request("/r/orders/order-#{oid}-dn/vps", "cancel_messages", "DELETE")
     end
 
-    def move(oid, params)
+    def move(oid, params={})
         raise ArgumentError, "oid should be an Integer" unless oid.is_a?(Integer)
         raise ArgumentError, "params should be a hash" unless params.is_a?(Hash)
         default_params = {
             :update_dns=>false,
             :move_reason=>'',
             :pricing_change_option=>'CHOOSE_BEST_OPTION',
-            :selected_host_server_oid=>nil
+            :selected_host_server_oid=>nil,
         }
         data = {:vps_move_request => prep_data(default_params, params)}
         send_request("/r/orders/order-#{oid}-dn/vps/host-server", "about_order", "PUT", data)
@@ -85,7 +85,9 @@ class Rimu::Servers < Rimu
             :disk_space_mb => nil,
             :memory_mb => nil,
         }
-        data = {:vps_resize_request => prep_data(default_params, params)}
+        clean_params = prep_data(default_params, params)
+        raise ArgumentError, "atleast one parameter is required" if clean_params.empty?
+        data = {:vps_resize_request => clean_params}
         send_request("/r/orders/order-#{oid}-dn/vps/parameters", "resource_change_result", "PUT", data)
     end
 
