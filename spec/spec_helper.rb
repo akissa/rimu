@@ -1,13 +1,17 @@
 $LOAD_PATH.unshift File.expand_path('../../lib', __FILE__)
 require 'simplecov'
-SimpleCov.start
+
 if ENV['CI']=='true'
   require 'codecov'
   require 'codeclimate-test-reporter'
-  SimpleCov.formatter = SimpleCov::Formatter::Codecov
-  ENV['CODECLIMATE_REPO_TOKEN'] = "98eb635c4bb4c62c56e531c05c69d911616f3fa319cf79a86ef7b6b783f42fa9"
+  SimpleCov.formatter = SimpleCov::Formatter::MultiFormatter[
+      SimpleCov::Formatter::HTMLFormatter,
+      SimpleCov::Formatter::Codecov,
+      CodeClimate::TestReporter::Formatter,
+  ]
   CodeClimate::TestReporter.start
 end
+SimpleCov.start
 
 require 'mocha/api'
 require 'rimu'

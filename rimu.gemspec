@@ -1,8 +1,11 @@
 # coding: utf-8
+lib = File.expand_path('../lib', __FILE__)
+$LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
+require 'rimu/version'
 
 Gem::Specification.new do |spec|
   spec.name          = "rimu"
-  spec.version       = "0.0.4"
+  spec.version       = Rimu::Version::VERSION
   spec.authors       = ["Andrew Colin Kissa"]
   spec.email         = ["andrew@topdog.za.net"]
   spec.license       = "MPL-2.0"

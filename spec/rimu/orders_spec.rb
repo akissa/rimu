@@ -1,23 +1,23 @@
 require File.expand_path(File.dirname(__FILE__) + '/../spec_helper.rb')
 require 'rimu'
 
-describe Rimu::Orders do
+describe Rimu::RimuAPI::Orders do
     before :each do
         @api_key = 'foo'
-        @rimu = Rimu::Orders.new(:api_key => @api_key)
+        @rimu = Rimu::RimuAPI::Orders.new(:api_key => @api_key)
     end
 
     it 'should be a Rimu instance' do
-        @rimu.class.should < Rimu
+        @rimu.class.should < Rimu::RimuAPI
     end
 
     %w(orders order).each do |action|
-        it "should allow accessing the Rimu::Orders API #{action} method" do
+        it "should allow accessing the Rimu::RimuAPI::Orders API #{action} method" do
             @rimu.should respond_to(action.to_sym)
         end
     end
 
-    describe "when accessing the Rimu::Orders API orders method" do
+    describe "when accessing the Rimu::RimuAPI::Orders API orders method" do
         it 'should allow a params hash' do
             @rimu.stubs(:send_request)
             lambda { @rimu.send(:orders, {}) }.should_not raise_error
@@ -56,7 +56,7 @@ describe Rimu::Orders do
         end
     end
 
-    describe "when accessing the Rimu::Orders API order method" do
+    describe "when accessing the Rimu::RimuAPI::Orders API order method" do
         it 'should take only one argument' do
             @rimu.stubs(:send_request)
             lambda { @rimu.send(:order, 1, {}) }.should raise_error(ArgumentError)

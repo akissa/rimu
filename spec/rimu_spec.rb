@@ -1,59 +1,59 @@
 require 'spec_helper'
 
-describe Rimu do
+describe Rimu::RimuAPI do
     describe 'as a class' do
         it 'should be able to create a new Rimu instance' do
-            Rimu.should respond_to(:new)
+            Rimu::RimuAPI.should respond_to(:new)
         end
     end
 
     describe 'when creating a new Rimu instance' do
         it 'should accept an arguments hash' do
-            lambda { Rimu.new(:api_key => 'foo') }.should_not raise_error
+            lambda { Rimu::RimuAPI.new(:api_key => 'foo') }.should_not raise_error
         end
 
         it 'should require an arguments hash' do
-            lambda { Rimu.new }.should raise_error(ArgumentError)
+            lambda { Rimu::RimuAPI.new }.should raise_error(ArgumentError)
         end
 
         it 'should not fail if an API key is given' do
-            lambda { Rimu.new({ :api_key => 'foo' }) }.should_not raise_error
+            lambda { Rimu::RimuAPI.new({ :api_key => 'foo' }) }.should_not raise_error
         end
 
         it 'should fail if no API key is given' do
-            lambda { Rimu.new({}) }.should raise_error(ArgumentError)
+            lambda { Rimu::RimuAPI.new({}) }.should raise_error(ArgumentError)
         end
 
         it 'should allow providing a logger' do
-            api = Rimu.new(:api_key => 'foo', :logger => 'bar')
+            api = Rimu::RimuAPI.new(:api_key => 'foo', :logger => 'bar')
             api.logger.should == 'bar'
         end
 
         it 'should allow providing a read_timeout' do
-            api = Rimu.new(:api_key => 'foo', :read_timeout => 60)
+            api = Rimu::RimuAPI.new(:api_key => 'foo', :read_timeout => 60)
             api.read_timeout.should == 60
         end
 
         it 'should allow only accept read_timeout as an Integer' do
-            lambda { Rimu.new(:api_key => 'foo', :read_timeout => '60') }.should raise_error(ArgumentError)
+            lambda { Rimu::RimuAPI.new(:api_key => 'foo', :read_timeout => '60') }.should raise_error(ArgumentError)
         end
 
         it 'should default to 3600 if read_timeout parameter not provided' do
-            api = Rimu.new(:api_key => 'foo')
+            api = Rimu::RimuAPI.new(:api_key => 'foo')
             api.read_timeout.should == 3600
         end
 
         it 'should return a Rimu instance' do
-            Rimu.new(:api_key => 'foo').class.should == Rimu
+            Rimu::RimuAPI.new(:api_key => 'foo').class.should == Rimu::RimuAPI
         end
     end
 end
 
-describe 'Rimu' do
+describe 'Rimu::RimuAPI' do
     before :each do
         @api_url = 'https://fake-api.rimuhosting.com'
         @api_key = 'foo'
-        @rimu = Rimu.new(:api_key => @api_key, :api_url => @api_url)
+        @rimu = Rimu::RimuAPI.new(:api_key => @api_key, :api_url => @api_url)
     end
 
     describe 'when initialized with API key' do
@@ -63,12 +63,12 @@ describe 'Rimu' do
 
         describe 'when returning the current API URL' do
             it 'should return the API URL provided at creation time if one was provided' do
-                @rimu = Rimu.new(:api_key => @api_key, :api_url => 'https://fake-api.rimuhosting.com')
+                @rimu = Rimu::RimuAPI.new(:api_key => @api_key, :api_url => 'https://fake-api.rimuhosting.com')
                 @rimu.api_url.should == 'https://fake-api.rimuhosting.com'
             end
 
             it 'should return the stock Rimu API URL if none was provided at creation time' do
-                 @rimu = Rimu.new(:api_key => @api_key)
+                 @rimu = Rimu::RimuAPI.new(:api_key => @api_key)
                  @rimu.api_url.should == 'https://api.rimuhosting.com'
             end
         end
@@ -79,7 +79,7 @@ describe 'Rimu' do
     end
 
     it 'should raise the correct custom exception' do
-      lambda { @rimu.distributions }.should raise_error(Rimu::RimuRequestError)
+      lambda { @rimu.distributions }.should raise_error(Rimu::RimuAPI::RimuRequestError)
     end
 
     describe 'when submitting a request via the API' do
@@ -95,12 +95,12 @@ describe 'Rimu' do
         end
         describe 'when providing access to the Rimu distributions API' do
           it 'should allow raise the correct exception' do
-              lambda { @rimu.distributions }.should raise_error(Rimu::RimuResponseError)
+              lambda { @rimu.distributions }.should raise_error(Rimu::RimuAPI::RimuResponseError)
           end
         end
         describe 'when providing access to the Rimu Billing Methods API' do
           it 'should allow raise the correct exception' do
-              lambda { @rimu.billing_methods }.should raise_error(Rimu::RimuResponseError)
+              lambda { @rimu.billing_methods }.should raise_error(Rimu::RimuAPI::RimuResponseError)
           end
         end
       end
@@ -156,20 +156,20 @@ describe 'Rimu' do
                 lambda { @rimu.servers(:foo) }.should raise_error(ArgumentError)
             end
 
-            it 'should return a Rimu::Servers instance' do
-                @rimu.servers.class.should == Rimu::Servers
+            it 'should return a Rimu::RimuAPI::Servers instance' do
+                @rimu.servers.class.should == Rimu::RimuAPI::Servers
             end
 
-            it 'should set the API key on the Rimu::Servers instance to be our API key' do
+            it 'should set the API key on the Rimu::RimuAPI::Servers instance to be our API key' do
                 @rimu.servers.api_key.should == @api_key
             end
 
-            it 'should set the API url on the Rimu::Servers instance to be our API url' do
+            it 'should set the API url on the Rimu::RimuAPI::Servers instance to be our API url' do
                 @rimu.servers.api_url.should == @api_url
             end
 
-            it 'should return the same Rimu::Servers instance when called again' do
-                rimu = Rimu.new(:api_key => @api_key)
+            it 'should return the same Rimu::RimuAPI::Servers instance when called again' do
+                rimu = Rimu::RimuAPI.new(:api_key => @api_key)
                 result = rimu.servers
                 rimu.servers.should == result
             end
@@ -188,20 +188,20 @@ describe 'Rimu' do
                 lambda { @rimu.orders(:foo) }.should raise_error(ArgumentError)
             end
 
-            it 'should return a Rimu::Orders instance' do
-                @rimu.orders.class.should == Rimu::Orders
+            it 'should return a Rimu::RimuAPI::Orders instance' do
+                @rimu.orders.class.should == Rimu::RimuAPI::Orders
             end
 
-            it 'should set the API key on the Rimu::Orders instance to be our API key' do
+            it 'should set the API key on the Rimu::RimuAPI::Orders instance to be our API key' do
                 @rimu.orders.api_key.should == @api_key
             end
 
-            it 'should set the API url on the Rimu::Orders instance to be our API url' do
+            it 'should set the API url on the Rimu::RimuAPI::Orders instance to be our API url' do
                 @rimu.orders.api_url.should == @api_url
             end
 
-            it 'should return the same Rimu::Orders instance when called again' do
-                rimu = Rimu.new(:api_key => @api_key)
+            it 'should return the same Rimu::RimuAPI::Orders instance when called again' do
+                rimu = Rimu::RimuAPI.new(:api_key => @api_key)
                 result = rimu.orders
                 rimu.orders.should == result
             end
