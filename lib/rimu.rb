@@ -91,9 +91,9 @@ module Rimu
       def send_request(path, field, method="GET", data=nil)
           logger.info "#{method} #{api_url}#{path} body:#{data.inspect}" if logger
           if data.nil?
-            options = {headers: set_headers}
+            options = {:base_uri => api_url, headers: set_headers}
           else
-            options = {headers: set_headers, body: data.to_json, read_timeout: read_timeout}
+            options = {:base_uri => api_url, headers: set_headers, body: data.to_json, read_timeout: read_timeout}
           end
           begin
             response = HTTParty.send(method.downcase.to_sym, path, options).parsed_response
