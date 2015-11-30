@@ -145,14 +145,11 @@ module Rimu
 
       has_namespace :orders, :servers
 
-      class RimuArgumentError < ArgumentError
-      end
+      class RimuArgumentError < ArgumentError; end
 
-      class RimuRequestError < StandardError
-      end
+      class RimuRequestError < StandardError; end
 
-      class RimuResponseError < StandardError
-      end
+      class RimuResponseError < StandardError; end
   end
   Dir[File.expand_path(File.dirname(__FILE__) + '/rimu/*.rb')].each {|f| require f }
 end
