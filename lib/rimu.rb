@@ -81,11 +81,13 @@ module Rimu
       end
 
       def convert_item(response)
+        if response.respond_to?(:keys)
           response.keys.each do |key|
               response[key.downcase] = response[key]
               response.delete(key) if key != key.downcase
           end
-          OpenStruct.new(response)
+        end
+        OpenStruct.new(response)
       end
 
       def send_request(path, field, method="GET", data=nil)
