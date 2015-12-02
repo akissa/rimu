@@ -98,9 +98,9 @@ module Rimu
           begin
             response = HTTParty.send(method.downcase.to_sym, path, options).parsed_response
           rescue StandardError => e
-            raise RimuRequestError, "Errors completing request #{method} #{api_url}#{path} with data [#{data.inspect}]:\n#{e}"
+            raise RimuRequestError, "API Request ERROR: #{e}"
           end
-          raise RimuResponseError, "Errors completing request #{method} #{api_url}#{path} with data [#{data.inspect}]:\n#{error_message(response)}" if error?(response)
+          raise RimuResponseError, "API Response ERROR: #{error_message(response)}" if error?(response)
           logger.info "Response: => #{response}" if logger
           format_response(response, field)
       end
