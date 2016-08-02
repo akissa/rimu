@@ -3,7 +3,7 @@
 This gem provides bindings for the [Rimuhosting](https://www.rimuhosting.com/) [REST API](http://apidocs.rimuhosting.com)
 
 [![Build Status](https://travis-ci.org/akissa/rimu.svg?branch=master)](https://travis-ci.org/akissa/rimu)
-[![codecov.io](https://codecov.io/github/akissa/rimu/coverage.svg?branch=master)](https://codecov.io/github/akissa/rimu?branch=master)
+[![codecov](https://codecov.io/gh/akissa/rimu/branch/master/graph/badge.svg)](https://codecov.io/gh/akissa/rimu)
 [![Test Coverage](https://codeclimate.com/github/akissa/rimu/badges/coverage.svg)](https://codeclimate.com/github/akissa/rimu/coverage)
 [![Code Climate](https://codeclimate.com/github/akissa/rimu/badges/gpa.svg)](https://codeclimate.com/github/akissa/rimu)
 [![Gem Version](https://badge.fury.io/rb/rimu.svg)](https://badge.fury.io/rb/rimu)
