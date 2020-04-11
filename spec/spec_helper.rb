@@ -3,13 +3,10 @@ require 'simplecov'
 
 if ENV['CI']=='true'
   require 'codecov'
-  require 'codeclimate-test-reporter'
   SimpleCov.formatters = [
       SimpleCov::Formatter::HTMLFormatter,
       SimpleCov::Formatter::Codecov,
-      CodeClimate::TestReporter::Formatter,
   ]
-  CodeClimate::TestReporter.start
 end
 SimpleCov.start
 
