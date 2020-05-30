@@ -28,5 +28,5 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "rspec-expectations"
   spec.add_development_dependency "mocha", "~> 0"
   spec.add_runtime_dependency "httparty", ">= 0.10.0"
-  spec.add_runtime_dependency "json", "~> 1.0"
+  spec.add_runtime_dependency "json", "~> 2.0"
 end
